@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'title' => 'Shaka aho gutangira amaraso',
+    'subtitle' => 'Shaka unateganye igihe cyo gutanga amaraso',
+    'search_placeholder' => 'Shaka umujyi, ikigo, cyangwa aho biherereye...',
+    'search_btn' => 'Shaka',
+    'active' => 'Birakora',
+    'na' => 'Ntabwo biboneka',
+    'open' => 'Hafunguye',
+    'hours' => 'Amasaha',
+    'book_btn' => 'Fata Gahunda',
+    'call_btn' => 'Hamagara ikigo',
+    'stats_total' => 'Ibigo byose',
+    'stats_available' => 'Ibihari ubu',
+    'stats_today' => 'Hafunguye uyu munsi',
+    'modal_title' => 'Ibisobanuro bya Gahunda',
+    'center' => 'Ikigo',
+    'no_slots' => 'Nta myanya ihari kuri iki kigo ubu. Gerageza ikindi kigo cyangwa uduhamagare tugufashe.',
+    'select_date' => 'Hitamo Itariki',
+    'select_time' => 'Hitamo Isaha',
+    'confirm_btn' => 'Emeza Gahunda',
+    'wait_msg' => 'Uretse gato! Ugomba gutegereza iminsi :days kugirango wongere gutanga amaraso.',
+    'success_msg' => 'Gahunda yemejwe! Nomero yayo ni: :id',
+    'no_results' => 'Nta hantu habonetse huye n\'ibyo mwashatse.',
+];

@@ -1,0 +1,35 @@
+<?php
+
+return [
+    'badge' => 'Inyigisho ku mutangiye',
+    'hero_title' => 'Gutanga amaraso bikiza ubuzima',
+    'hero_desc' => 'Inshuro imwe y’amaraso ifasha abarwayi bagera kuri batatu. Ibitaro bikeneye amaraso ahagije buri munsi kugira ngo buri wese abone ubuvuzi akeneye.',
+    'can_donate_title' => 'Uwemererwa gutanga',
+    'can_donate_list' => [
+        'age' => 'Imyaka 18 kugeza kuri 65',
+        'weight' => 'Ibiro bitari munsi ya 50 kg',
+        'health' => 'Ubuzima bwiza ku munsi wo gutanga',
+        'infection' => 'Nta ndwara yandura cyangwa umuriro',
+    ],
+    'should_wait_title' => 'Ugomba gutegereza',
+    'should_wait_list' => [
+        'illness' => 'Indwara ya vuba cyangwa gutwita',
+        'surgery' => 'Kubagwa cyangwa kuvurwa amenyo vuba',
+        'tattoo' => 'Gushyiraho amashushanyo (tattoo) vuba',
+        'meds' => 'Imiti imwe n’imwe',
+    ],
+    'process_title' => 'Ibikorerwa aho batanga amaraso',
+    'step_1' => 'Kwiyandikisha',
+    'step_2' => 'Gupimwa ubuzima',
+    'step_3' => 'Gutanga amaraso',
+    'step_4' => 'Gufata agafunguro',
+    'safety_title' => 'Umutekano n’Ibizami',
+    'safety_desc' => 'Umutekano wawe niwo uza imbere. Buri maraso yatanzwe apimirwa SIDA, Hepatite B na C, hamwe n’imitezi hakoreshejwe ibikoresho bishya kandi bisukuye.',
+    'prep_title' => 'Uko witegura',
+    'prep_meal' => 'Rya indyo yoroheje',
+    'prep_water' => 'Nywa amazi ahagije',
+    'prep_id' => 'Zana indangamuntu yawe',
+    'cta_title' => 'Witeguye gukiza ubuzima?',
+    'cta_desc' => 'Shaka ikigo kikuri hafi wubakishe umwanya uyu munsi.',
+    'cta_btn' => 'Shaka aho biherereye',
+];

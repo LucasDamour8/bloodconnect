@@ -1,0 +1,35 @@
+<?php
+
+return [
+    'badge' => 'Donor Education',
+    'hero_title' => 'Blood donation saves lives',
+    'hero_desc' => 'One unit of blood helps up to three patients. Hospitals need a steady supply every day to ensure everyone receives the care they need.',
+    'can_donate_title' => 'Who can donate',
+    'can_donate_list' => [
+        'age' => 'Age 18 to 65 years',
+        'weight' => 'Weight at least 50 kg',
+        'health' => 'Good health on the day of donation',
+        'infection' => 'No active infection or fever',
+    ],
+    'should_wait_title' => 'Who should wait',
+    'should_wait_list' => [
+        'illness' => 'Recent illness or pregnancy',
+        'surgery' => 'Recent surgery or dental work',
+        'tattoo' => 'Recent tattoo or piercing',
+        'meds' => 'Certain medications',
+    ],
+    'process_title' => 'What happens during donation',
+    'step_1' => 'Registration',
+    'step_2' => 'Health Check',
+    'step_3' => 'Collection',
+    'step_4' => 'Refreshment',
+    'safety_title' => 'Safety & Testing',
+    'safety_desc' => 'Your safety comes first. Every donation is tested for HIV, Hepatitis B, Hepatitis C, and Syphilis using sterile, single-use equipment.',
+    'prep_title' => 'How to prepare',
+    'prep_meal' => 'Eat a light meal',
+    'prep_water' => 'Drink enough water',
+    'prep_id' => 'Bring a valid ID',
+    'cta_title' => 'Ready to save a life?',
+    'cta_desc' => 'Find a nearby center and book your spot today.',
+    'cta_btn' => 'Find a Location',
+];

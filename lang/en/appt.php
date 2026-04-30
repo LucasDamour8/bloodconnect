@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'title' => 'Find Donation Locations',
+    'subtitle' => 'Search and book your next donation session',
+    'search_placeholder' => 'Search city, center, or address...',
+    'search_btn' => 'Search',
+    'active' => 'Active',
+    'na' => 'N/A',
+    'open' => 'Open',
+    'hours' => 'Hours',
+    'book_btn' => 'Book Appointment',
+    'call_btn' => 'Call Center',
+    'stats_total' => 'Total Centers',
+    'stats_available' => 'Available Now',
+    'stats_today' => 'Open Today',
+    'modal_title' => 'Appointment Details',
+    'center' => 'Center',
+    'no_slots' => 'No available slots found for this center. Please try another center or call them for help.',
+    'select_date' => 'Select Date',
+    'select_time' => 'Select Time',
+    'confirm_btn' => 'Confirm Appointment',
+    'wait_msg' => 'Wait a moment! You must wait :days days before you can donate blood again.',
+    'success_msg' => 'Appointment Confirmed! Tracking ID: :id',
+    'no_results' => 'No locations found matching your search.',
+];
