@@ -1,45 +1,26 @@
+FROM php:8.2-cli
 
-# Use PHP with Apache
-FROM php:8.2-apache
+WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    zip \
-    unzip \
-    git \
-    curl \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql
+    git unzip curl libzip-dev zip libpng-dev libonig-dev
 
-# Install Node.js (for Tailwind/Vite)
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs
-
-# Enable Apache mod_rewrite for Laravel
-RUN a2enmod rewrite
-
-# Set working directory
-WORKDIR /var/www/html
-
-# Copy project files
-COPY . .
+# Install PHP extensions required by Laravel
+RUN docker-php-ext-install pdo pdo_mysql mbstring zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-RUN composer install --no-dev --optimize-autoloader
 
-# Install Node dependencies and build assets
-RUN npm install && npm run build
+# Copy project FIRST (important fix)
+COPY . .
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Install dependencies safely
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Change Apache Root to Laravel /public
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Laravel permissions fix
+RUN chmod -R 775 storage bootstrap/cache
 
-EXPOSE 80
+EXPOSE 10000
+
+CMD php artisan serve --host=0.0.0.0 --port=10000
