@@ -27,6 +27,9 @@ RUN npm run build
 # 7. Laravel permissions fix
 RUN chmod -R 775 storage bootstrap/cache
 
+# 8. Create the storage link
+RUN php artisan storage:link
+
 EXPOSE 10000
 
 CMD php artisan serve --host=0.0.0.0 --port=10000
