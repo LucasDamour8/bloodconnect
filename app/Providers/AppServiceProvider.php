@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Fix for "Not Secure" warning in production
+        // Force HTTPS in production to fix the "Not Secure" warning
         if (config('app.env') === 'production') {
             URL::forceScheme('https');
         }
@@ -35,14 +35,14 @@ class AppServiceProvider extends ServiceProvider
             try {
                 $user = Auth::user();
                 
-                // Get global counts
+                // Get global counts for the sidebar badges
                 $pendingApptsCount = Appointment::whereIn('status', ['scheduled', 'Awaiting Exam', 'AWAITING EXAM'])->count();
                 $totalDonors       = User::where('role', 'donor')->count();
                 $totalDoctors      = User::where('role', 'doctor')->count();
                 $locationsCount    = Location::exists() ? Location::count() : 0;
                 $feedbackCount     = Feedback::exists() ? Feedback::where('status', 'pending')->count() : 0;
 
-                // Apply Doctor filters if logged in
+                // Apply Doctor-specific location filters if logged in
                 if ($user && $user->role === 'doctor') {
                     $locationIds = $user->locations->pluck('id');
                     $pendingApptsCount = Appointment::whereIn('location_id', $locationIds)
@@ -59,7 +59,7 @@ class AppServiceProvider extends ServiceProvider
                     'pending_feedback' => $feedbackCount,
                 ]);
             } catch (\Exception $e) {
-                // Fail gracefully if database isn't ready
+                // If DB fails, send default values so the page still loads (prevents 500 errors)
                 $view->with('stats', [
                     'pending' => 0, 'pending_appts' => 0, 'total_donors' => 0,
                     'total_doctors' => 0, 'total_locations' => 0, 'pending_feedback' => 0
