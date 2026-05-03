@@ -5,12 +5,16 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('guest');
+    }
+
     /**
      * Show the registration form.
      */
@@ -20,69 +24,76 @@ class RegisterController extends Controller
     }
 
     /**
-     * Handle account registration.
+     * Handle the registration form submission.
      */
     public function register(Request $request)
     {
-        // 1. Validation
+        // ── Validate ────────────────────────────────────────────────────────
         $request->validate([
-            'first_name'    => 'required|string|max:100',
-            'last_name'     => 'required|string|max:100',
-            'email'         => 'required|email|unique:users',
-            'phone'         => 'nullable|string|max:30',
-            'role'          => 'required|in:donor,doctor',
-            'national_id'   => 'required|digits:16|unique:users', 
-            'district'      => 'required|string|max:100',
-            'sector'        => 'required|string|max:100',
-            'date_of_birth' => 'required|date|before:-17 years',
-            'gender'        => 'required|in:male,female,other',
-            // Blood type is only required if the user chooses 'donor'
-            'blood_type'    => 'nullable|required_if:role,donor|string|max:5',
-            'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'password'      => 'required|min:8|confirmed',
-            'terms'         => 'required|accepted',
+            'first_name'    => ['required', 'string', 'max:100'],
+            'last_name'     => ['required', 'string', 'max:100'],
+            'email'         => ['required', 'email', 'max:255', 'unique:users,email'],
+            'phone'         => ['nullable', 'string', 'max:20'],
+            'national_id'   => ['required', 'string', 'size:16', 'unique:users,national_id'],
+            'role'          => ['required', 'in:donor,doctor'],
+            'province'      => ['required', 'string'], // Validated but not inserted
+            'district'      => ['required', 'string', 'max:100'],
+            'sector'        => ['required', 'string', 'max:100'],
+            'gender'        => ['required', 'in:male,female'],
+            'date_of_birth' => ['required', 'date', 'before:-16 years'],
+            'blood_type'    => ['required_if:role,donor', 'nullable', 'in:unknown,A+,A-,B+,B-,AB+,AB-,O+,O-'], 
+            'profile_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'password'      => ['required', 'string', 'min:8', 'confirmed'],
+            'terms'         => ['required', 'accepted'],
+        ], [
+            'national_id.size'          => 'National ID must be exactly 16 digits.',
+            'national_id.unique'        => 'This National ID is already registered.',
+            'blood_type.required_if'    => 'Blood type is required for donors.',
+            'date_of_birth.before'      => 'You must be at least 16 years old.',
+            'terms.accepted'            => 'You must accept the terms and conditions.',
+            'password.confirmed'        => 'Passwords do not match.',
         ]);
 
-        // 2. Handle Profile Photo Upload
+        // ── Handle photo upload ─────────────────────────────────────────────
         $photoPath = null;
         if ($request->hasFile('profile_photo')) {
-            $photoPath = $request->file('profile_photo')->store('profile-photos', 'public');
+            $photoPath = $request->file('profile_photo')->store('profile_photos', 'public');
         }
 
-        // 3. Logic: Donors are active immediately, Doctors stay inactive (0)
+        // ── Doctors start inactive (admin must activate) ────────────────────
         $isActive = ($request->role === 'donor');
 
-        // 4. Create User
+        // ── Create user ─────────────────────────────────────────────────────
         $user = User::create([
             'first_name'    => $request->first_name,
             'last_name'     => $request->last_name,
             'email'         => $request->email,
             'phone'         => $request->phone,
-            'role'          => $request->role,
             'national_id'   => $request->national_id,
+            'role'          => $request->role,
+            // 'province' is excluded here as requested
             'district'      => $request->district,
             'sector'        => $request->sector,
-            'date_of_birth' => $request->date_of_birth,
             'gender'        => $request->gender,
+            'date_of_birth' => $request->date_of_birth,
             'blood_type'    => ($request->role === 'donor') ? $request->blood_type : null,
             'profile_photo' => $photoPath,
-            'is_active'     => $isActive, 
-            'password'      => Hash::make($request->password),
+            'is_active'     => $isActive,
             'locale'        => session('locale', 'en'),
+            'password'      => Hash::make($request->password),
         ]);
 
-        // 5. Trigger Registered Event (Email Verification)
-        event(new Registered($user));
-
-        // 6. Post-Registration Redirect Logic
-        if ($request->role === 'doctor') {
-            // Doctors are redirected to login with a success alert
-            return redirect()->route('login')->with('success', 'Registration successful! Your doctor account is pending Admin approval. Please check your email for verification.');
-        }
-
-        // Donors are logged in automatically and sent to the dashboard
+        // ── Log in immediately ──────────────────────────────────────────────
         Auth::login($user);
-        
-        return redirect()->route('dashboard')->with('success', 'Welcome to BloodConnect! Your donor account has been created successfully.');
+        session(['locale' => $user->locale]);
+
+        session()->flash('success', "Welcome to BloodConnect, {$user->first_name}! Your account has been created.");
+
+        // ── Redirect by role ────────────────────────────────────────────────
+        return match($user->role) {
+            'admin'  => redirect()->route('admin.dashboard'),
+            'doctor' => redirect()->route('doctor.dashboard'),
+            default  => redirect()->route('dashboard'),
+        };
     }
 }
