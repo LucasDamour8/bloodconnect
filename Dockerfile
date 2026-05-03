@@ -8,29 +8,28 @@ RUN apt-get update && apt-get install -y \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
 
-# 2. Install PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql mbstring zip
+# 2. Install PHP extensions (Added bcmath)
+RUN docker-php-ext-install pdo pdo_mysql mbstring zip bcmath
 
 # 3. Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 4. Copy all project files
+# 4. Copy project files
 COPY . .
 
 # 5. Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# 6. Build Frontend Assets (Vite/Tailwind)
+# 6. Build Frontend Assets
 RUN npm install && npm run build
 
 # 7. Setup Storage and Permissions
-# This is the FIX for the 500 Server Error
+# We ensure the www-data user owns the files before starting
 RUN php artisan storage:link
-RUN chmod -R 775 storage bootstrap/cache public
-RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
+RUN chown -R www-data:www-data /app && chmod -R 775 /app/storage /app/bootstrap/cache
 
 EXPOSE 10000
 
-# 8. Start with production migrations
-# --force is required for migrations to run in production
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=10000
+# 8. Start Command
+# Added config:cache to make sure the APP_KEY from Render is loaded
+CMD php artisan config:cache && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=10000
