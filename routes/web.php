@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminDashboardController;
