@@ -24,7 +24,6 @@
             <p class="text-gray-500 mt-2">{{ __('auth.register_subtitle') }}</p>
         </div>
 
-        {{-- ✅ ERROR DISPLAY FIX (IMPORTANT) --}}
         @if ($errors->any())
             <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
                 <ul class="text-sm space-y-1">
@@ -35,9 +34,59 @@
             </div>
         @endif
 
-        <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        {{-- MAIN FORM WITH FULL RWANDA LOCATION LOGIC --}}
+        <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data" class="space-y-6"
+              x-data="{ 
+                role: '{{ old('role', 'donor') }}',
+                selectedProvince: '{{ old('province', '') }}',
+                selectedDistrict: '{{ old('district', '') }}',
+                selectedSector: '{{ old('sector', '') }}',
+                locations: {
+                    'Kigali City': {
+                        'Nyarugenge': ['Gitega', 'Kanyinya', 'Kigali', 'Kimisagara', 'Mageragere', 'Muhima', 'Nyakabanda', 'Nyamirambo', 'Nyarugenge', 'Rwezamenyo'],
+                        'Gasabo': ['Bumbogo', 'Gatsata', 'Jali', 'Gikomero', 'Gisozi', 'Jabana', 'Kacyiru', 'Kinyinya', 'Ndera', 'Nduba', 'Rusororo', 'Rutunga', 'Kimironko', 'Remera'],
+                        'Kicukiro': ['Gahanga', 'Gatenga', 'Gikondo', 'Kagarama', 'Kanombe', 'Kicukiro', 'Kigarama', 'Masaka', 'Niboye', 'Nyarugunga']
+                    },
+                    'Southern Province': {
+                        'Nyamagabe': ['Buruhukiro', 'Cyanika', 'Gasaka', 'Gatare', 'Kaduha', 'Kamegeli', 'Kibirizi', 'Kibumbwe', 'Kitabi', 'Mbazi', 'Mugano', 'Musange', 'Musebeya', 'Mushubi', 'Nkomane', 'Tare', 'Uwinkingi'],
+                        'Huye': ['Gishamvu', 'Karama', 'Kigoma', 'Kinazi', 'Maraba', 'Mbazi', 'Mukura', 'Ngoma', 'Rusatira', 'Rwaniro', 'Tumba', 'Huye'],
+                        'Nyanza': ['Busasamana', 'Busoro', 'Cyabakamyi', 'Kibirizi', 'Kigoma', 'Mukingo', 'Muyira', 'Ntyazo', 'Nyagisozi', 'Rwabicuma'],
+                        'Gisagara': ['Gikonko', 'Gishubi', 'Kansi', 'Kibilizi', 'Kigembe', 'Mamba', 'Muganza', 'Mugombwa', 'Mukindo', 'Musha', 'Ndora', 'Nyanza', 'Save'],
+                        'Kamonyi': ['Gacurabwenge', 'Karama', 'Kayenzi', 'Kayumbu', 'Mugina', 'Musambira', 'Ngamba', 'Nyamiyaga', 'Nyarubaka', 'Rugalika', 'Rukoma', 'Runda'],
+                        'Muhanga': ['Cyeza', 'Kabacuzi', 'Kibangu', 'Kiyumba', 'Muhanga', 'Mushishiro', 'Nyabinoni', 'Nyamabuye', 'Nyarusange', 'Rongi', 'Shyogwe'],
+                        'Nyaruguru': ['Cyahinda', 'Busanze', 'Kibeho', 'Mata', 'Munini', 'Kivu', 'Ngera', 'Ngoma', 'Nyabimata', 'Nyagisozi', 'Muganza', 'Ruheru', 'Ruramba', 'Rusenge'],
+                        'Ruhango': ['Kinazi', 'Byimana', 'Bweramana', 'Mbuye', 'Ruhango', 'Mwendo', 'Kinihira', 'Ntongwe']
+                    },
+                    'Eastern Province': {
+                        'Nyagatare': ['Gatunda', 'Kiyombe', 'Karama', 'Karangazi', 'Katabagemu', 'Matimba', 'Mimuri', 'Mukama', 'Musheli', 'Nyagatare', 'Rukomo', 'Rwempasha', 'Tabagwe'],
+                        'Gatsibo': ['Gasange', 'Gatsibo', 'Gitoki', 'Kageyo', 'Kiramuruzi', 'Kiziguro', 'Muhura', 'Murambi', 'Ngarama', 'Nyagihanga', 'Remera', 'Rugarama', 'Rwimbogo'],
+                        'Kayonza': ['Gahini', 'Kabare', 'Kabarondo', 'Mukarange', 'Murama', 'Murundi', 'Mwiri', 'Ndego', 'Nyamirama', 'Rukara', 'Ruramira', 'Rwinkwavu'],
+                        'Rwamagana': ['Fumbwe', 'Gahengeri', 'Gishari', 'Karenge', 'Kigabiro', 'Muhazi', 'Musha', 'Muyumbu', 'Mwulire', 'Nyakariro', 'Nzige', 'Rubona'],
+                        'Bugesera': ['Gashora', 'Juru', 'Kamabuye', 'Ntarama', 'Mareba', 'Mayange', 'Musenyi', 'Mwogo', 'Ngeruka', 'Nyamata', 'Nyarugenge', 'Rahuha', 'Rweru', 'Shyara'],
+                        'Ngoma': ['Gashanda', 'Jarama', 'Karembo', 'Kazo', 'Kibungo', 'Mugesera', 'Murama', 'Mutenderi', 'Remera', 'Rukira', 'Rukumberi', 'Sake', 'Zaza'],
+                        'Kirehe': ['Gahara', 'Gatore', 'Kigarama', 'Kigina', 'Kirehe', 'Mahama', 'Mpanga', 'Musaza', 'Mushikiri', 'Nasho', 'Nyamugari', 'Nyarubuye']
+                    },
+                    'Western Province': {
+                        'Rubavu': ['Bugeshi', 'Busasamana', 'Cyanzarwe', 'Gisenyi', 'Kanama', 'Kanzenze', 'Mudende', 'Nyakiliba', 'Nyamyumba', 'Nyundo', 'Rubavu', 'Rugerero'],
+                        'Rusizi': ['Bugarama', 'Butare', 'Bweyeye', 'Gashonga', 'Giheke', 'Gihundwe', 'Gikundamvura', 'Gitambi', 'Kamembe', 'Muganza', 'Mururu', 'Nkanka', 'Nkombo', 'Nkungu', 'Nyakabuye', 'Nyakarenzo', 'Nzahaha', 'Rwimbogo'],
+                        'Karongi': ['Bwishyura', 'Gishyita', 'Gisovu', 'Gityaza', 'Mubuga', 'Murambi', 'Murundi', 'Mutuntu', 'Rubengera', 'Rugabano', 'Ruganda', 'Rwankuba', 'Twumba'],
+                        'Nyamasheke': ['Bushekeri', 'Busubi', 'Cyato', 'Gihombo', 'Kagano', 'Kanjongo', 'Karambi', 'Kirimbi', 'Macuba', 'Mahembe', 'Nyabitekeri', 'Rangiro', 'Ruharambuga', 'Shangi', 'Tyazo'],
+                        'Rutsiro': ['Boneza', 'Gihango', 'Kigeyo', 'Kivumu', 'Manihira', 'Mukura', 'Mushonyi', 'Mushubati', 'Nyabirasi', 'Ruhango', 'Rusebeya'],
+                        'Nyabihu': ['Bigogwe', 'Jenda', 'Jomba', 'Kabatwa', 'Karago', 'Kintobo', 'Mukamira', 'Muringa', 'Rambura', 'Rugera', 'Rurembo', 'Shyira'],
+                        'Ngororero': ['Bwira', 'Gatumba', 'Hindiro', 'Kabaya', 'Kageyo', 'Kavumu', 'Matyazo', 'Muhanda', 'Muhororo', 'Ndaro', 'Ngororero', 'Nyange', 'Sovu']
+                    },
+                    'Northern Province': {
+                        'Musanze': ['Busogo', 'Cyuve', 'Gacaca', 'Gashaki', 'Gataraga', 'Kimonyi', 'Kinigi', 'Muhoza', 'Muko', 'Musanze', 'Nkotsi', 'Nyange', 'Remera', 'Rwaza', 'Shingiro'],
+                        'Burera': ['Bungwe', 'Butaro', 'Cyanika', 'Cyeru', 'Gahunga', 'Gatebe', 'Gitovu', 'Kagogo', 'Kinoni', 'Kinyababa', 'Kivuye', 'Nemba', 'Rugarama', 'Rugendabari', 'Ruhunde', 'Rusarabuge', 'Rwerere'],
+                        'Gicumbi': ['Bukure', 'Bwisige', 'Byumba', 'Cyumba', 'Giti', 'Kaniga', 'Manyagiro', 'Miyove', 'Kageyo', 'Mukarange', 'Muko', 'Mutete', 'Nyamiyaga', 'Nyankenke', 'Rubaya', 'Rukomo', 'Rushaki', 'Rutare', 'Ruvune', 'Rwamiko', 'Shangasha'],
+                        'Gakenke': ['Busengo', 'Coko', 'Cyabingo', 'Gakenke', 'Gashenyi', 'Janja', 'Kamubuga', 'Karambo', 'Kivuruga', 'Mataba', 'Minazi', 'Mugunga', 'Muhondo', 'Muyongwe', 'Muzo', 'Nemba', 'Ruli', 'Rusasa', 'Rushashi'],
+                        'Rulindo': ['Base', 'Burega', 'Bushoki', 'Buyoga', 'Cyinzuzi', 'Cyungo', 'Kinihira', 'Kisaro', 'Masoro', 'Mbogo', 'Murambi', 'Ngoma', 'Ntarabana', 'Rukozo', 'Rusiga', 'Shyorongi', 'Tumba']
+                    }
+                }
+              }">
             @csrf
 
+            {{-- Names --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">{{ __('auth.first_name') }}</label>
@@ -52,6 +101,7 @@
                 </div>
             </div>
 
+            {{-- Contact --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">{{ __('auth.email') }}</label>
@@ -66,6 +116,7 @@
                 </div>
             </div>
 
+            {{-- ID and DOB --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">{{ __('auth.national_id') }}</label>
@@ -80,9 +131,8 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6"
-                 x-data="{ role: '{{ old('role', 'donor') }}' }">
-
+            {{-- Role, Blood Type (with Unknown), and Gender --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">{{ __('auth.register_as') }}</label>
                     <select name="role" x-model="role" required
@@ -96,7 +146,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">{{ __('auth.blood_type') }}</label>
                     <select name="blood_type"
                         class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 outline-none">
-                        <option value="">{{ __('auth.unknown') }}</option>
+                        <option value="unknown" {{ old('blood_type') == 'unknown' ? 'selected' : '' }}>{{ __('auth.unknown') }}</option>
                         @foreach(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $type)
                             <option value="{{ $type }}" {{ old('blood_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
                         @endforeach
@@ -113,20 +163,47 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {{-- Province, District, and Sector Selection (Dynamic Hierarchy) --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">{{ __('auth.province') }}</label>
+                    <select name="province" x-model="selectedProvince" @change="selectedDistrict = ''; selectedSector = ''" required
+                        class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 outline-none">
+                        <option value="">{{ __('auth.province') }}</option>
+                        <template x-for="(districts, province) in locations" :key="province">
+                            <option :value="province" x-text="province"></option>
+                        </template>
+                    </select>
+                </div>
+
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">{{ __('auth.district') }}</label>
-                    <input type="text" name="district" value="{{ old('district') }}" required
-                        class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 outline-none">
+                    <select name="district" x-model="selectedDistrict" @change="selectedSector = ''" required :disabled="!selectedProvince"
+                        class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 outline-none disabled:bg-gray-50">
+                        <option value="">{{ __('auth.district') }}</option>
+                        <template x-if="selectedProvince">
+                            <template x-for="(sectors, district) in locations[selectedProvince]" :key="district">
+                                <option :value="district" x-text="district"></option>
+                            </template>
+                        </template>
+                    </select>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">{{ __('auth.sector') }}</label>
-                    <input type="text" name="sector" value="{{ old('sector') }}" required
-                        class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 outline-none">
+                    <select name="sector" x-model="selectedSector" required :disabled="!selectedDistrict"
+                        class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 outline-none disabled:bg-gray-50">
+                        <option value="">{{ __('auth.sector') }}</option>
+                        <template x-if="selectedDistrict">
+                            <template x-for="sector in locations[selectedProvince][selectedDistrict]" :key="sector">
+                                <option :value="sector" x-text="sector"></option>
+                            </template>
+                        </template>
+                    </select>
                 </div>
             </div>
 
+            {{-- Passwords --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">{{ __('auth.password') }}</label>
