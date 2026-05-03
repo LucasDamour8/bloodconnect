@@ -31,6 +31,7 @@ class User extends Authenticatable
         'gender', 
         'blood_type', 
         'profile_photo',
+        'locale',
     ];
 
     protected $hidden = [
